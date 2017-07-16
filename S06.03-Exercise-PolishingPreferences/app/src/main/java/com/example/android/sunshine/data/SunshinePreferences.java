@@ -42,6 +42,13 @@ public class SunshinePreferences {
     private static final String DEFAULT_MAP_LOCATION =
             "1600 Amphitheatre Parkway, Mountain View, CA 94043";
 
+    private static String location = "";
+    private static boolean metric = false;
+
+    public static void setMetric(boolean isMetric){
+        metric = isMetric;
+    }
+
     /**
      * Helper method to handle setting location details in Preferences (City Name, Latitude,
      * Longitude)
@@ -68,6 +75,10 @@ public class SunshinePreferences {
         /** This will be implemented in a future lesson **/
     }
 
+    static public void setLocation(String newLocation){
+        location = newLocation;
+    }
+
     /**
      * Resets the stored location coordinates.
      *
@@ -87,9 +98,12 @@ public class SunshinePreferences {
      * "94043,USA" if SharedPreferences have not been implemented yet.
      */
     public static String getPreferredWeatherLocation(Context context) {
-        // TODO (1) Return the user's preferred location
+        // DONE (1) Return the user's preferred location
         /** This will be implemented in a future lesson **/
-        return getDefaultWeatherLocation();
+        if (location.equals("")) {
+            return getDefaultWeatherLocation();
+        }
+        return location;
     }
 
     /**
@@ -100,9 +114,9 @@ public class SunshinePreferences {
      * @return true If metric display should be used
      */
     public static boolean isMetric(Context context) {
-        // TODO (2) Return true if the user's preference for units is metric, false otherwise
+        // DONE (2) Return true if the user's preference for units is metric, false otherwise
         /** This will be implemented in a future lesson **/
-        return true;
+        return metric;
     }
 
     /**
