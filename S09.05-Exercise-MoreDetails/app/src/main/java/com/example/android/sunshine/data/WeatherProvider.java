@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.android.sunshine.utilities.SunshineDateUtils;
 
@@ -257,7 +258,6 @@ public class WeatherProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-
                 break;
             }
 
