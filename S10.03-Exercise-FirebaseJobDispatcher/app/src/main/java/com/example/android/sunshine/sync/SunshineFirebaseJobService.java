@@ -13,13 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// TODO (2) Make sure you've imported the jobdispatcher.JobService, not job.JobService
 
-// TODO (3) Add a class called SunshineFirebaseJobService that extends jobdispatcher.JobService
+package com.example.android.sunshine.sync;
 
-//  TODO (4) Declare an ASyncTask field called mFetchWeatherTask
+// DONE (2) Make sure you've imported the jobdispatcher.JobService, not job.JobService
 
-//  TODO (5) Override onStartJob and within it, spawn off a separate ASyncTask to sync weather data
-//              TODO (6) Once the weather data is sync'd, call jobFinished with the appropriate arguments
+// DONE (3) Add a class called SunshineFirebaseJobService that extends jobdispatcher.JobService
 
-//  TODO (7) Override onStopJob, cancel the ASyncTask if it's not null and return true
+//  DONE (4) Declare an ASyncTask field called mFetchWeatherTask
+
+//  DONE (5) Override onStartJob and within it, spawn off a separate ASyncTask to sync weather data
+//              DONE (6) Once the weather data is sync'd, call jobFinished with the appropriate arguments
+
+//  DONE (7) Override onStopJob, cancel the ASyncTask if it's not null and return true
+
+import android.os.AsyncTask;
+
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
+
+public class SunshineFirebaseJobService extends JobService{
+    private AsyncTask mFetchWeatherTask;
+
+    @Override
+    public boolean onStartJob(final JobParameters job) {
+        mFetchWeatherTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                SunshineSyncTask.syncWeather(getApplicationContext());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                jobFinished(job, false);
+            }
+        };
+        mFetchWeatherTask.execute();
+        return true;
+    }
+
+    @Override
+    public boolean onStopJob(JobParameters job) {
+        if (mFetchWeatherTask!=null){
+            mFetchWeatherTask.cancel(true);
+        }
+        return true;
+    }
+}

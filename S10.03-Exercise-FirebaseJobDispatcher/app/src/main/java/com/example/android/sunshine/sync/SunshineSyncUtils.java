@@ -20,18 +20,46 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.util.TimeUtils;
+import android.text.format.DateUtils;
 
 import com.example.android.sunshine.data.WeatherContract;
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.Driver;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.Trigger;
+
+import java.util.concurrent.TimeUnit;
 
 public class SunshineSyncUtils {
 
-//  TODO (10) Add constant values to sync Sunshine every 3 - 4 hours
+//  DONE (10) Add constant values to sync Sunshine every 3 - 4 hours
+    private static int SYNC_INTERVAL1 = (int) TimeUnit.HOURS.toSeconds(3);
+    private static int SYNC_INTERVAL2 = SYNC_INTERVAL1 + (int)TimeUnit.HOURS.toSeconds(1);
 
     private static boolean sInitialized;
 
-//  TODO (11) Add a sync tag to identify our sync job
+//  DONE (11) Add a sync tag to identify our sync job
+    private static final String SYNC_TAG = "firebase-sync";
 
-//  TODO (12) Create a method to schedule our periodic weather sync
+//  DONE (12) Create a method to schedule our periodic weather sync
+    private static void FirebaseJobScheduler(Context context){
+        Driver driver = GooglePlayDriver(context);
+        FirebaseJobDispatcher jobDispatcher = new FirebaseJobDispatcher(driver);
+        Job job = jobDispatcher.newJobBuilder()
+                .setService(SunshineFirebaseJobService.class)
+                .setTag(SYNC_TAG)
+                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .setLifetime(Lifetime.UNTIL_NEXT_BOOT)
+                .setRecurring(true)
+                .setTrigger(Trigger.executionWindow(SYNC_INTERVAL1, SYNC_INTERVAL2))
+                .setReplaceCurrent(true)
+                .build();
+        jobDispatcher.schedule(job);
+    }
 
     /**
      * Creates periodic sync tasks and checks to see if an immediate sync is required. If an
@@ -50,7 +78,8 @@ public class SunshineSyncUtils {
 
         sInitialized = true;
 
-//      TODO (13) Call the method you created to schedule a periodic weather sync
+//      DONE (13) Call the method you created to schedule a periodic weather sync
+        FirebaseJobScheduler(context);
 
         /*
          * We need to check to see if our ContentProvider has data to display in our forecast
